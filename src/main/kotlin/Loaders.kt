@@ -172,7 +172,7 @@ class EnverResourceConfiguration {
  */
 fun enverResource(
     filename: String = "",
-    block: EnverResourceConfiguration.() -> Unit
+    block: EnverResourceConfiguration.() -> Unit = {}
 ): Map<String, String> {
     val configuration = EnverResourceConfiguration()
     configuration.filename = filename
@@ -232,7 +232,7 @@ class EnverSourceConfiguration {
 fun enverSource(
     @Language("dotenv")
     source: String = "",
-    block: EnverSourceConfiguration.() -> Unit
+    block: EnverSourceConfiguration.() -> Unit = {}
 ): Map<String, String> {
     val configuration = EnverSourceConfiguration()
     configuration.source = source

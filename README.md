@@ -1,4 +1,4 @@
-# Enver
+# Enver [![](https://jitpack.io/v/net.lsafer/enver.svg)](https://jitpack.io/#net.lsafer/enver)
 
 Environment Variables Solution for kotlin
 

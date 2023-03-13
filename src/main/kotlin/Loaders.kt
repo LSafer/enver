@@ -193,8 +193,8 @@ fun enverResource(configuration: EnverResourceConfiguration): Map<String, String
         .currentThread()
         .contextClassLoader
         .getResourceAsStream(configuration.filename)
-        ?.readAllBytes()
-        ?.decodeToString()
+        ?.bufferedReader()
+        ?.readText()
 
     if (content == null) {
         if (configuration.required)

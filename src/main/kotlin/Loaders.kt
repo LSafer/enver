@@ -17,6 +17,7 @@ package net.lsafer.enver
 
 import net.lsafer.enver.internal.ErrorHandler
 import net.lsafer.enver.internal.parse
+import net.lsafer.enver.internal.parseLookups
 import org.intellij.lang.annotations.Language
 import java.io.File
 
@@ -249,4 +250,47 @@ fun enverSource(
 @OptIn(InternalEnverApi::class)
 fun enverSource(configuration: EnverSourceConfiguration): Map<String, String> {
     return parse(configuration.source, configuration.onError)
+}
+
+/**
+ * Take the given [sources] and perform variable
+ * expansions on them and return the result.
+ *
+ * Long recursive variable expansions will be replaced
+ * with an empty string and display a logger warning.
+ *
+ * ```dotenv
+ * # .env
+ * A = "A<${B}>"
+ * B = "B<${A}>"
+ *
+ * # `A` will output: `A<B<>>`
+ * # `B` will output: `B<A<>>`
+ * ```
+ *
+ * Variables that has a lookup to itself will be
+ * replaced with the previous variable passed to it.
+ *
+ * ```dotenv
+ * # foo.env
+ * A = "1,${A}"
+ *
+ * # bar.env
+ * A = "2,${A}"
+ *
+ * # if `foo` is before `bar`, `A` will output `2,1,`
+ * # if `bar` is before `foo`, `A` will output `1,2,`
+ * ```
+ */
+@OptIn(InternalEnverApi::class)
+fun enverExpansions(sources: List<Map<String, String>>): Map<String, String> {
+    return parseLookups(sources)
+}
+
+/**
+ * Take the given [sources] and perform variable
+ * expansions on them and return the result.
+ */
+fun enverExpansions(vararg sources: Map<String, String>): Map<String, String> {
+    return enverExpansions(sources.asList())
 }

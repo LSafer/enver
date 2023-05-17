@@ -23,8 +23,8 @@ private val logger = Logger.getLogger("net.lsafer.enver")
 // (name: String, value: String?, error: String) -> Boolean
 internal typealias ErrorHandler = (Triple<String, String?, String>) -> Boolean
 
-private val envNameRegex = Regex("[\\W.-]+")
-private val envValueRegex = Regex("([\\W.-]*)|(['\"].*['\"])")
+private val envNameRegex = Regex("[\\w.-]+")
+private val envValueRegex = Regex("([\\w.-]*)|(['\"].*['\"])")
 private val envQueuesRegex = Regex("^['\"].*['\"]$")
 
 /**

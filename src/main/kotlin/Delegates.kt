@@ -46,9 +46,46 @@ fun Enver.required(name: String): ReadOnlyProperty<Any?, String> {
  * @since 1.0.0
  */
 fun <T> Enver.required(name: String, block: (String) -> T): ReadOnlyProperty<Any?, T> {
-    return this(name) {
+    return this.optional(name) {
         it ?: error("Required environment variable uninitialized: $name")
         block(it)
+    }
+}
+
+// return null
+
+/**
+ * Obtain a property that uses this enver instance
+ * as the source of truth.
+ *
+ * The source is initially set to `null`
+ *
+ * @param name the variable's name.
+ * @since 1.0.0
+ */
+fun Enver.optional(name: String): ReadOnlyProperty<Any?, String?> {
+    return optional(name) { it }
+}
+
+/**
+ * Obtain a property that uses this enver instance
+ * as the source of truth.
+ *
+ * The source is initially set to `null`
+ *
+ * @param name the variable's name.
+ * @param block a function for transforming the value to type of [T].
+ *               Invoked once on every change of the variable's name.
+ * @since 1.0.0
+ */
+@OptIn(ExperimentalEnverApi::class)
+fun <T> Enver.optional(name: String, block: (String?) -> T): ReadOnlyProperty<Any?, T> {
+    var current = lazy { block(null) }
+    subscribe(name) {
+        current = lazy { block(it) }
+    }
+    return ReadOnlyProperty { _, _ ->
+        current.value
     }
 }
 
@@ -64,8 +101,8 @@ fun <T> Enver.required(name: String, block: (String) -> T): ReadOnlyProperty<Any
  * @param default the default value.
  * @since 1.0.0
  */
-operator fun Enver.invoke(name: String, default: String): ReadOnlyProperty<Any?, String> {
-    return this(name, default) { it }
+fun Enver.optional(name: String, default: String): ReadOnlyProperty<Any?, String> {
+    return optional(name, default) { it }
 }
 
 /**
@@ -81,7 +118,7 @@ operator fun Enver.invoke(name: String, default: String): ReadOnlyProperty<Any?,
  * @since 1.0.0
  */
 @OptIn(ExperimentalEnverApi::class)
-operator fun <T> Enver.invoke(name: String, default: String, block: (String) -> T): ReadOnlyProperty<Any?, T> {
+fun <T> Enver.optional(name: String, default: String, block: (String) -> T): ReadOnlyProperty<Any?, T> {
     var current = lazy { block(default) }
     subscribe(name) {
         current = lazy { block(it) }
@@ -91,7 +128,39 @@ operator fun <T> Enver.invoke(name: String, default: String, block: (String) -> 
     }
 }
 
-// nullable
+// DEPRECATED
+
+/**
+ * Obtain a property that uses this enver instance
+ * as the source of truth.
+ *
+ * The source is initially set to [default].
+ *
+ * @param name the variable's name.
+ * @param default the default value.
+ * @since 1.0.0
+ */
+@Deprecated("Use optional() instead", ReplaceWith("optional(name, default)"))
+operator fun Enver.invoke(name: String, default: String): ReadOnlyProperty<Any?, String> {
+    return optional(name, default)
+}
+
+/**
+ * Obtain a property that uses this enver instance
+ * as the source of truth.
+ *
+ * The source is initially set to [default].
+ *
+ * @param name the variable's name.
+ * @param default the default value.
+ * @param block a function for transforming the value to type of [T].
+ *               Invoked once on every change of the variable's name.
+ * @since 1.0.0
+ */
+@Deprecated("Use optional() instead", ReplaceWith("optional(name, default, block)"))
+operator fun <T> Enver.invoke(name: String, default: String, block: (String) -> T): ReadOnlyProperty<Any?, T> {
+    return optional(name, default, block)
+}
 
 /**
  * Obtain a property that uses this enver instance
@@ -102,8 +171,9 @@ operator fun <T> Enver.invoke(name: String, default: String, block: (String) -> 
  * @param name the variable's name.
  * @since 1.0.0
  */
+@Deprecated("Use optional() instead", ReplaceWith("optional(name)"))
 operator fun Enver.invoke(name: String): ReadOnlyProperty<Any?, String?> {
-    return this(name) { it }
+    return optional(name)
 }
 
 /**
@@ -117,13 +187,7 @@ operator fun Enver.invoke(name: String): ReadOnlyProperty<Any?, String?> {
  *               Invoked once on every change of the variable's name.
  * @since 1.0.0
  */
-@OptIn(ExperimentalEnverApi::class)
+@Deprecated("Use optional() instead", ReplaceWith("optional(name, block)"))
 operator fun <T> Enver.invoke(name: String, block: (String?) -> T): ReadOnlyProperty<Any?, T> {
-    var current = lazy { block(null) }
-    subscribe(name) {
-        current = lazy { block(it) }
-    }
-    return ReadOnlyProperty { _, _ ->
-        current.value
-    }
+    return optional(name, block)
 }

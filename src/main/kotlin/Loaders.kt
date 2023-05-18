@@ -153,7 +153,8 @@ class EnverResourceConfiguration {
     /**
      * The name of the resource.
      */
-    var filename: String = ".env"
+    @Language("file-reference")
+    var filename: String = ""
 
     /**
      * True, to throw if the resource is missing.
@@ -172,6 +173,7 @@ class EnverResourceConfiguration {
  * configuration [block].
  */
 fun enverResource(
+    @Language("file-reference")
     filename: String = "",
     block: EnverResourceConfiguration.() -> Unit = {}
 ): Map<String, String> {

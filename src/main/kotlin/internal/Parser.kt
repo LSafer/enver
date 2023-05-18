@@ -36,22 +36,14 @@ fun parse(content: String, onError: ErrorHandler): Map<String, String> {
     return content.split("\n")
         .asSequence()
         .map { line -> line.trim() }
-        .filterNot { line ->
-            line.isBlank() ||
-            line.startsWith("#") ||
-            line.startsWith("////")
-        }
+        .filterNot { line -> line.isBlank() || line.startsWith("#") }
         .map { line ->
             val segments = line
                 .split("=", limit = 2)
                 .map { it.trim() }
 
             segments[0] to segments.getOrNull(1)?.let {
-                when {
-                    it matches envQueuesRegex ->
-                        it.substring(1, it.length - 1)
-                    else -> it
-                }
+                parseTrimmedValue(it)
             }
         }
         .map { (name, value) ->
@@ -60,8 +52,8 @@ fun parse(content: String, onError: ErrorHandler): Map<String, String> {
                     Triple(name, value, "Illegal environment variable name: $name")
                 value == null ->
                     Triple(name, "", "Missing `=` after environment variable: $name")
-                !value.matches(envValueRegex) ->
-                    Triple(name, value, "Illegal environment variable value: $name=$value")
+//                !value.matches(envValueRegex) ->
+//                    Triple(name, value, "Illegal environment variable value: $name=$value")
                 else ->
                     Triple(name, value, null)
             }
@@ -104,4 +96,41 @@ private fun List<Map<String, String>>.histogram(): Map<String, List<String>> {
     val o = mutableMapOf<String, MutableList<String>>()
     forEach { it.forEach { (k, v) -> o.getOrPut(k) { mutableListOf() }.add(0, v) } }
     return o
+}
+
+private fun parseTrimmedValue(content: String): String {
+    // if the value starts with `"`,
+    // everything after the second unescaped `"` is a comment
+    // + the unescaped `"` should not be included in the value.
+
+    if (content.startsWith("\"")) {
+        val terminal = content.indexOfUnescaped('"', '\\', 1)
+
+        if (terminal < 0) return content.drop(1)
+
+        return content.substring(1, terminal)
+    }
+
+    // if the value does not start with `"`,
+    // everything after the first `#` is a comment
+    // + the `#` should not be included in the value.
+
+    val terminal = content.indexOf('#')
+
+    if (terminal < 0) return content
+
+    return content.substring(0, terminal)
+}
+
+private fun String.indexOfUnescaped(char: Char, escape: Char, startIndex: Int): Int {
+    var cursor = startIndex
+
+    do {
+        cursor = indexOf(char, cursor)
+
+        if (cursor < 1 || get(cursor - 1) != escape)
+            return cursor
+
+        cursor++
+    } while (true)
 }

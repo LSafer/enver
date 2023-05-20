@@ -16,8 +16,14 @@
 package net.lsafer.enver
 
 import kotlin.properties.ReadOnlyProperty
+import kotlin.time.Duration
 
 //
+
+@Suppress("NOTHING_TO_INLINE")
+private inline fun String.contentfulOrNull(): String? {
+    return takeIf { it.isNotBlank() }
+}
 
 /**
  * A wrapper over [optional] only accepting
@@ -27,7 +33,7 @@ import kotlin.properties.ReadOnlyProperty
  * @since 1.0.0
  */
 fun Enver.contentful(name: String): ReadOnlyProperty<Any?, String?> {
-    return optional(name) { it?.takeIf { it.isNotBlank() } }
+    return optional(name) { it?.contentfulOrNull() }
 }
 
 /**
@@ -40,7 +46,7 @@ fun Enver.contentful(name: String): ReadOnlyProperty<Any?, String?> {
  * @since 1.0.0
  */
 fun <T> Enver.contentful(name: String, block: (String?) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.takeIf { it.isNotBlank() }) }
+    return optional(name) { block(it?.contentfulOrNull()) }
 }
 
 //
@@ -54,7 +60,7 @@ fun <T> Enver.contentful(name: String, block: (String?) -> T): ReadOnlyProperty<
  * @since 1.0.0
  */
 fun Enver.contentful(name: String, default: String): ReadOnlyProperty<Any?, String> {
-    return optional(name) { it?.takeIf { it.isNotBlank() } ?: default }
+    return optional(name) { it?.contentfulOrNull() ?: default }
 }
 
 /**
@@ -68,7 +74,7 @@ fun Enver.contentful(name: String, default: String): ReadOnlyProperty<Any?, Stri
  * @since 1.0.0
  */
 fun <T> Enver.contentful(name: String, default: String, block: (String) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.takeIf { it.isNotBlank() } ?: default) }
+    return optional(name) { block(it?.contentfulOrNull() ?: default) }
 }
 
 //

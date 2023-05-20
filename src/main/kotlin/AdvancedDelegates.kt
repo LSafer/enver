@@ -118,3 +118,28 @@ fun <T> Enver.long(name: String, default: Long, block: (Long) -> T): ReadOnlyPro
 }
 
 //
+
+@Suppress("NOTHING_TO_INLINE")
+private inline fun String.toDurationOrNull(): Duration? {
+    return Duration.parseOrNull(this)
+}
+
+fun Enver.duration(name: String): ReadOnlyProperty<Any?, Duration?> {
+    return optional(name) { it?.toDurationOrNull() }
+}
+
+fun <T> Enver.duration(name: String, block: (Duration?) -> T): ReadOnlyProperty<Any?, T> {
+    return optional(name) { block(it?.toDurationOrNull()) }
+}
+
+//
+
+fun Enver.duration(name: String, default: Duration): ReadOnlyProperty<Any?, Duration> {
+    return optional(name) { it?.toDurationOrNull() ?: default }
+}
+
+fun <T> Enver.duration(name: String, default: Duration, block: (Duration) -> T): ReadOnlyProperty<Any?, T> {
+    return optional(name) { block(it?.toDurationOrNull() ?: default) }
+}
+
+//

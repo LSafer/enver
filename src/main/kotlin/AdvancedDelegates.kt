@@ -53,7 +53,7 @@ fun <T> Enver.contentful(name: String, block: (String?) -> T): ReadOnlyProperty<
  * @param default the default value.
  * @since 1.0.0
  */
-fun Enver.contentful(name: String, default: String): ReadOnlyProperty<Any?, String?> {
+fun Enver.contentful(name: String, default: String): ReadOnlyProperty<Any?, String> {
     return optional(name) { it?.takeIf { it.isNotBlank() } ?: default }
 }
 

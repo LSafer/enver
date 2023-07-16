@@ -143,3 +143,21 @@ fun <T> Enver.duration(name: String, default: Duration, block: (Duration) -> T):
 }
 
 //
+
+fun Enver.boolean(name: String): ReadOnlyProperty<Any?, Boolean?> {
+    return optional(name) { it?.toBooleanStrictOrNull() }
+}
+
+fun <T> Enver.boolean(name: String, block: (Boolean?) -> T): ReadOnlyProperty<Any?, T> {
+    return optional(name) { block(it?.toBooleanStrictOrNull()) }
+}
+
+//
+
+fun Enver.boolean(name: String, default: Boolean): ReadOnlyProperty<Any?, Boolean> {
+    return optional(name) { it?.toBooleanStrictOrNull() ?: default }
+}
+
+fun <T> Enver.boolean(name: String, default: Boolean, block: (Boolean) -> T): ReadOnlyProperty<Any?, T> {
+    return optional(name) { block(it?.toBooleanStrictOrNull() ?: default) }
+}

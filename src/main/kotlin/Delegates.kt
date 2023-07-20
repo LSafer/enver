@@ -91,10 +91,12 @@ fun <T> Enver.optional(name: String, default: String, block: (String) -> T): Rea
  * @param name the variable's name.
  * @since 1.0.0
  */
-@Suppress("DeprecatedCallableAddReplaceWith")
 @Deprecated("Use string() with an error() on null instead")
 fun Enver.required(name: String): ReadOnlyProperty<Any?, String> {
-    return required(name) { it }
+    return string(name) {
+        it ?: error("Required environment variable uninitialized: $name")
+        it
+    }
 }
 
 /**
@@ -127,9 +129,9 @@ fun <T> Enver.required(name: String, block: (String) -> T): ReadOnlyProperty<Any
  * @param default the default value.
  * @since 1.0.0
  */
-@Deprecated("Use optional() instead", ReplaceWith("optional(name, default)"))
+@Deprecated("Use string() instead", ReplaceWith("string(name) { it ?: default }"))
 operator fun Enver.invoke(name: String, default: String): ReadOnlyProperty<Any?, String> {
-    return optional(name, default)
+    return string(name) { it ?: default }
 }
 
 /**
@@ -144,9 +146,9 @@ operator fun Enver.invoke(name: String, default: String): ReadOnlyProperty<Any?,
  *               Invoked once on every change of the variable's name.
  * @since 1.0.0
  */
-@Deprecated("Use optional() instead", ReplaceWith("optional(name, default, block)"))
+@Deprecated("Use string() instead", ReplaceWith("string(name) { block(it ?: default) }"))
 operator fun <T> Enver.invoke(name: String, default: String, block: (String) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name, default, block)
+    return string(name) { block(it ?: default) }
 }
 
 /**
@@ -158,9 +160,9 @@ operator fun <T> Enver.invoke(name: String, default: String, block: (String) -> 
  * @param name the variable's name.
  * @since 1.0.0
  */
-@Deprecated("Use optional() instead", ReplaceWith("optional(name)"))
+@Deprecated("Use string() instead", ReplaceWith("string(name)"))
 operator fun Enver.invoke(name: String): ReadOnlyProperty<Any?, String?> {
-    return optional(name)
+    return string(name)
 }
 
 /**
@@ -174,7 +176,7 @@ operator fun Enver.invoke(name: String): ReadOnlyProperty<Any?, String?> {
  *               Invoked once on every change of the variable's name.
  * @since 1.0.0
  */
-@Deprecated("Use optional() instead", ReplaceWith("optional(name, block)"))
+@Deprecated("Use string() instead", ReplaceWith("string(name, block)"))
 operator fun <T> Enver.invoke(name: String, block: (String?) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name, block)
+    return string(name, block)
 }

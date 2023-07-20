@@ -77,7 +77,7 @@ interface Enver {
 
 /**
  * Create a provider that returns a new property
- * using [createProperty] with the name being
+ * using [Enver.createProperty] with the name being
  * the name of the property instance provided to it.
  *
  * If an instance is provided. The following name
@@ -93,7 +93,7 @@ fun Enver.createPropertyProvider(): EnverPropertyProvider<String?> {
 
 /**
  * Create a provider that returns a new property
- * using [createProperty] with the name being
+ * using [Enver.createProperty] with the name being
  * the name of the property instance provided to it.
  *
  * If an instance is provided. The following name

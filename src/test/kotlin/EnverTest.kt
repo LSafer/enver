@@ -51,8 +51,11 @@ object EnverTest {
     fun `EnverImpl removes the property listener when not referenced`() {
         val enver = EnverImpl()
 
-        run {
+        // `run { }` and `({})()`
+        // inlines execution which won't make property disappear
+        repeat(1) {
             val property by enver.createProperty("")
+            System.gc()
             assertEquals(1, enver.countListeners())
             // force no optimizations
             property.toString()

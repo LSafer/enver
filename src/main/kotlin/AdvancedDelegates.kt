@@ -18,12 +18,7 @@ package net.lsafer.enver
 import kotlin.properties.ReadOnlyProperty
 import kotlin.time.Duration
 
-//
-
-@Suppress("NOTHING_TO_INLINE")
-private inline fun String.contentfulOrNull(): String? {
-    return takeIf { it.isNotBlank() }
-}
+/* this whole file has been deprecated  */
 
 /**
  * A wrapper over [optional] only accepting
@@ -32,8 +27,11 @@ private inline fun String.contentfulOrNull(): String? {
  * @param name the variable's name.
  * @since 1.0.0
  */
+@Deprecated("Use string() instead", ReplaceWith(
+    "string(name) { it?.takeIf { it.isNotBlank() } }"
+))
 fun Enver.contentful(name: String): ReadOnlyProperty<Any?, String?> {
-    return optional(name) { it?.contentfulOrNull() }
+    return string(name) { it?.takeIf { it.isNotBlank() } }
 }
 
 /**
@@ -45,11 +43,12 @@ fun Enver.contentful(name: String): ReadOnlyProperty<Any?, String?> {
  *               Invoked once on every change of the variable's name.
  * @since 1.0.0
  */
+@Deprecated("Use string() instead", ReplaceWith(
+    "string(name) { block(it?.takeIf { it.isNotBlank() }) }"
+))
 fun <T> Enver.contentful(name: String, block: (String?) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.contentfulOrNull()) }
+    return string(name) { block(it?.takeIf { it.isNotBlank() }) }
 }
-
-//
 
 /**
  * A wrapper over [optional] only accepting
@@ -59,8 +58,11 @@ fun <T> Enver.contentful(name: String, block: (String?) -> T): ReadOnlyProperty<
  * @param default the default value.
  * @since 1.0.0
  */
+@Deprecated("Use string() instead", ReplaceWith(
+    "string(name) { it?.takeIf { it.isNotBlank() } ?: default }"
+))
 fun Enver.contentful(name: String, default: String): ReadOnlyProperty<Any?, String> {
-    return optional(name) { it?.contentfulOrNull() ?: default }
+    return string(name) { it?.takeIf { it.isNotBlank() } ?: default }
 }
 
 /**
@@ -73,91 +75,82 @@ fun Enver.contentful(name: String, default: String): ReadOnlyProperty<Any?, Stri
  *               Invoked once on every change of the variable's name.
  * @since 1.0.0
  */
+@Deprecated("Use string() instead", ReplaceWith(
+    "string(name) { block(it?.takeIf { it.isNotBlank() } ?: default) }"
+))
 fun <T> Enver.contentful(name: String, default: String, block: (String) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.contentfulOrNull() ?: default) }
+    return string(name) { block(it?.takeIf { it.isNotBlank() } ?: default) }
 }
 
 //
 
-fun Enver.int(name: String): ReadOnlyProperty<Any?, Int?> {
-    return optional(name) { it?.toIntOrNull() }
-}
-
-fun <T> Enver.int(name: String, block: (Int?) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.toIntOrNull()) }
-}
-
-//
-
+@Deprecated("Use ?: operator instead", ReplaceWith("int(name) { it ?: default }"))
 fun Enver.int(name: String, default: Int): ReadOnlyProperty<Any?, Int> {
-    return optional(name) { it?.toIntOrNull() ?: default }
+    return int(name) { it ?: default }
 }
 
+@Deprecated("Use ?: operator instead", ReplaceWith("int(name) { block(it ?: default) }"))
 fun <T> Enver.int(name: String, default: Int, block: (Int) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.toIntOrNull() ?: default) }
+    return int(name) { block(it ?: default) }
 }
 
 //
 
-fun Enver.long(name: String): ReadOnlyProperty<Any?, Long?> {
-    return optional(name) { it?.toLongOrNull() }
+@Deprecated("Use ?: operator instead", ReplaceWith("float(name) { it ?: default }"))
+fun Enver.float(name: String, default: Float): ReadOnlyProperty<Any?, Float> {
+    return float(name) { it ?: default }
 }
 
-fun <T> Enver.long(name: String, block: (Long?) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.toLongOrNull()) }
+@Deprecated("Use ?: operator instead", ReplaceWith("float(name) { block(it ?: default) }"))
+fun <T> Enver.float(name: String, default: Float, block: (Float) -> T): ReadOnlyProperty<Any?, T> {
+    return float(name) { block(it ?: default) }
 }
 
 //
 
+
+@Deprecated("Use ?: operator instead", ReplaceWith("double(name) { it ?: default }"))
+fun Enver.double(name: String, default: Double): ReadOnlyProperty<Any?, Double> {
+    return double(name) { it ?: default }
+}
+
+@Deprecated("Use ?: operator instead", ReplaceWith("double(name) { block(it ?: default) }"))
+fun <T> Enver.double(name: String, default: Double, block: (Double) -> T): ReadOnlyProperty<Any?, T> {
+    return double(name) { block(it ?: default) }
+}
+
+//
+
+@Deprecated("Use ?: operator instead", ReplaceWith("long(name) { it ?: default }"))
 fun Enver.long(name: String, default: Long): ReadOnlyProperty<Any?, Long> {
-    return optional(name) { it?.toLongOrNull() ?: default }
+    return long(name) { it ?: default }
 }
 
+@Deprecated("Use ?: operator instead", ReplaceWith("long(name) { block(it ?: default) }"))
 fun <T> Enver.long(name: String, default: Long, block: (Long) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.toLongOrNull() ?: default) }
+    return long(name) { block(it ?: default) }
 }
 
 //
 
-@Suppress("NOTHING_TO_INLINE")
-private inline fun String.toDurationOrNull(): Duration? {
-    return Duration.parseOrNull(this)
-}
-
-fun Enver.duration(name: String): ReadOnlyProperty<Any?, Duration?> {
-    return optional(name) { it?.toDurationOrNull() }
-}
-
-fun <T> Enver.duration(name: String, block: (Duration?) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.toDurationOrNull()) }
-}
-
-//
-
+@Deprecated("Use ?: operator instead", ReplaceWith("duration(name) { block(it ?: default) }"))
 fun Enver.duration(name: String, default: Duration): ReadOnlyProperty<Any?, Duration> {
-    return optional(name) { it?.toDurationOrNull() ?: default }
+    return duration(name) { it ?: default }
 }
 
+@Deprecated("Use ?: operator instead", ReplaceWith("duration(name) { block(it ?: default) }"))
 fun <T> Enver.duration(name: String, default: Duration, block: (Duration) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.toDurationOrNull() ?: default) }
+    return duration(name) { block(it ?: default) }
 }
 
 //
 
-fun Enver.boolean(name: String): ReadOnlyProperty<Any?, Boolean?> {
-    return optional(name) { it?.toBooleanStrictOrNull() }
-}
-
-fun <T> Enver.boolean(name: String, block: (Boolean?) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.toBooleanStrictOrNull()) }
-}
-
-//
-
+@Deprecated("Use ?: operator instead", ReplaceWith("boolean(name) { it ?: default }"))
 fun Enver.boolean(name: String, default: Boolean): ReadOnlyProperty<Any?, Boolean> {
-    return optional(name) { it?.toBooleanStrictOrNull() ?: default }
+    return boolean(name) { it ?: default }
 }
 
+@Deprecated("Use ?: operator instead", ReplaceWith("boolean(name) { block(it ?: default) }"))
 fun <T> Enver.boolean(name: String, default: Boolean, block: (Boolean) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name) { block(it?.toBooleanStrictOrNull() ?: default) }
+    return boolean(name) { block(it ?: default) }
 }

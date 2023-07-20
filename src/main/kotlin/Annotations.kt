@@ -16,22 +16,6 @@
 package net.lsafer.enver
 
 /**
- * Marks the annotated component as internal.
- *
- * @since 2.0.0
- */
-@RequiresOptIn(
-    message = "This is an internal API and was not designed to be used directly",
-    level = RequiresOptIn.Level.ERROR
-)
-annotation class InternalEnverApi(
-    /**
-     * Optionally, the reason why the component was marked with this annotation.
-     */
-    val reason: String = "This is an internal API and was not designed to be used directly"
-)
-
-/**
  * Marks the annotated component as experimental.
  *
  * @since 1.0.0
@@ -45,26 +29,4 @@ annotation class ExperimentalEnverApi(
      * Optionally, the reason why the component was marked with this annotation.
      */
     val reason: String = "This is an experimental API and might change at anytime"
-)
-
-/**
- * Marks the annotated component as advanced.
- *
- * Components marked by this annotation are meant
- * to be used in libraries and not application code.
- *
- * This was put to avoid users getter into stuff
- * that needs more reading by accident.
- *
- * @since 2.0.0
- */
-@RequiresOptIn(
-    message = "This API is meant to be used to extend the functionality of enver",
-    level = RequiresOptIn.Level.WARNING
-)
-annotation class AdvancedEnverApi(
-    /**
-     * Optionally, the reason why the component was marked with this annotation.
-     */
-    val reason: String = "This API is meant to be used to extend the functionality of enver"
 )

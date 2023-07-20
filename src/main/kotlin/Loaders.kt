@@ -126,7 +126,6 @@ fun enverFile(
  *
  * @param configuration the configuration object.
  */
-@OptIn(InternalEnverApi::class)
 fun enverFile(configuration: EnverFileConfiguration): Map<String, String> {
     val content = configuration.file
         .takeIf { it.isFile }
@@ -190,7 +189,6 @@ fun enverResource(
  *
  * @param configuration the configuration object.
  */
-@OptIn(InternalEnverApi::class)
 fun enverResource(configuration: EnverResourceConfiguration): Map<String, String> {
     val content = Thread
         .currentThread()
@@ -249,7 +247,6 @@ fun enverSource(
  *
  * @param configuration the configuration object.
  */
-@OptIn(InternalEnverApi::class)
 fun enverSource(configuration: EnverSourceConfiguration): Map<String, String> {
     return parse(configuration.source, configuration.onError)
 }
@@ -284,7 +281,6 @@ fun enverSource(configuration: EnverSourceConfiguration): Map<String, String> {
  * # if `bar` is before `foo`, `A` will output `1,2,`
  * ```
  */
-@OptIn(InternalEnverApi::class)
 fun enverExpansions(sources: List<Map<String, String>>): Map<String, String> {
     return parseLookups(sources)
 }

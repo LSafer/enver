@@ -19,6 +19,8 @@ import net.lsafer.enver.internal.EnverImpl
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+import kotlin.reflect.full.extensionReceiverParameter
+import kotlin.reflect.jvm.jvmErasure
 
 typealias EnverProperty<T> = ReadOnlyProperty<Any?, T>
 typealias EnverPropertyProvider<T> = PropertyDelegateProvider<Any?, EnverProperty<T>>
@@ -115,8 +117,16 @@ fun Enver(): Enver {
 }
 
 private fun inferNameFor(instance: Any?, property: KProperty<*>): String {
-    return when (instance) {
-        null -> property.name
-        else -> "$instance.${property.name}"
+    if (instance != null) {
+        return "$instance.${property.name}"
     }
+
+    if (property.extensionReceiverParameter != null) {
+        val objectInstance = property.extensionReceiverParameter!!.type.jvmErasure.objectInstance
+                ?: error("Name inference for extension receivers that are not `object` is currently not supported.")
+
+        return "$objectInstance.${property.name}"
+    }
+
+    return property.name
 }

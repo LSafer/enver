@@ -59,13 +59,23 @@ internal class EnverImpl : Enver {
 
     override fun createProperty(name: String): EnverProperty<String?> {
         var value = current[name]
-        listeners[{ value = current[name] }] = name
-        return ReadOnlyProperty { _, _ -> value }
+        val listener = { value = current[name] }
+        listeners[listener] = name
+        return ReadOnlyProperty { _, _ ->
+            @Suppress("UNUSED_EXPRESSION")
+            listener // you die with me
+            value
+        }
     }
 
     override fun <T> createProperty(name: String, block: (String?) -> T): EnverProperty<T> {
         var value = lazy { block(current[name]) }
-        listeners[{ value = lazy { block(current[name]) } }] = name
-        return ReadOnlyProperty { _, _ -> value.value }
+        val listener = { value = lazy { block(current[name]) } }
+        listeners[listener] = name
+        return ReadOnlyProperty { _, _ ->
+            @Suppress("UNUSED_EXPRESSION")
+            listener // you die with me
+            value.value
+        }
     }
 }

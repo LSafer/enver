@@ -16,6 +16,12 @@
 package net.lsafer.enver
 
 import net.lsafer.enver.internal.EnverImpl
+import kotlin.properties.PropertyDelegateProvider
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
+
+typealias EnverProperty<T> = ReadOnlyProperty<Any?, T>
+typealias EnverPropertyProvider<T> = PropertyDelegateProvider<Any?, EnverProperty<T>>
 
 /**
  * A reactive instance holding environment manually
@@ -56,58 +62,61 @@ interface Enver {
     operator fun plusAssign(source: Map<String, String>)
 
     /**
-     * Add the given [block] to be invoked on
-     * every change.
-     *
-     * The block will be invoked immediately with
-     * the current values.
-     *
-     * @param key the key to be used to unsubscribe with. (default to [block])
+     * Create a new property that always returns
+     * the latest value for [name].
      */
-    @ExperimentalEnverApi
-    fun subscribe(block: (Map<String, String>) -> Unit, key: Any)
+    fun createProperty(name: String): EnverProperty<String?>
 
     /**
-     * Remove the blocks subscribed using the given
-     * [key] from being invoked on every change.
+     * Create a new property that always returns
+     * the latest value for [name] lazily
+     * transformed using [block].
      */
-    @ExperimentalEnverApi
-    fun unsubscribe(key: Any)
+    fun <T> createProperty(name: String, block: (String?) -> T): EnverProperty<T>
 }
 
 /**
- * Add the given [block] to be invoked on
- * every change.
- */
-@ExperimentalEnverApi
-fun Enver.subscribe(block: (Map<String, String>) -> Unit) {
-    subscribe(block, block)
-}
-
-/**
- * Add the given [block] to be invoked on every
- * change for the variable with the given [name].
- */
-@ExperimentalEnverApi
-fun Enver.subscribe(name: String, block: (String) -> Unit) {
-    subscribe(name, block, block)
-}
-
-/**
- * Add the given [block] to be invoked on every
- * change for the variable with the given [name].
+ * Create a provider that returns a new property
+ * using [Enver.createProperty] with the name being
+ * the name of the property instance provided to it.
  *
- * @param key the key to be used to unsubscribe with. (default to [block])
+ * If an instance is provided. The following name
+ * will be used instead:
+ *
+ * `"$instance.${property.name}"`
  */
-@ExperimentalEnverApi
-fun Enver.subscribe(name: String, block: (String) -> Unit, key: Any) {
-    subscribe({ it[name]?.let(block) }, key)
+fun Enver.createPropertyProvider(): EnverPropertyProvider<String?> {
+    return PropertyDelegateProvider { instance, property ->
+        createProperty(inferNameFor(instance, property))
+    }
+}
+
+/**
+ * Create a provider that returns a new property
+ * using [Enver.createProperty] with the name being
+ * the name of the property instance provided to it.
+ *
+ * If an instance is provided. The following name
+ * will be used instead:
+ *
+ * `"$instance.${property.name}"`
+ */
+fun <T> Enver.createPropertyProvider(block: (String?) -> T): EnverPropertyProvider<T> {
+    return PropertyDelegateProvider { instance, property ->
+        createProperty(inferNameFor(instance, property), block)
+    }
 }
 
 /**
  * Create a new [Enver] instance.
  */
-@OptIn(InternalEnverApi::class)
 fun Enver(): Enver {
     return EnverImpl()
+}
+
+private fun inferNameFor(instance: Any?, property: KProperty<*>): String {
+    return when (instance) {
+        null -> property.name
+        else -> "$instance.${property.name}"
+    }
 }

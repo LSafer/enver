@@ -15,7 +15,6 @@
  */
 package net.lsafer.enver.internal
 
-import net.lsafer.enver.InternalEnverApi
 import java.lang.StringBuilder
 import java.util.logging.Logger
 
@@ -28,8 +27,7 @@ internal typealias ErrorHandler = (Triple<String, String?, String>) -> Boolean
  * Parse the given [content] and using [onError]
  * handler when an error occurs.
  */
-@InternalEnverApi
-fun parse(content: String, onError: ErrorHandler): Map<String, String> {
+internal fun parse(content: String, onError: ErrorHandler): Map<String, String> {
     val map = mutableMapOf<String, String>()
     val iterator = content.lines().iterator()
 
@@ -146,8 +144,7 @@ fun parse(content: String, onError: ErrorHandler): Map<String, String> {
 
 private val lookupRegex = Regex("[$][{]([^}{$]*)[}]")
 
-@InternalEnverApi
-fun parseLookups(sources: List<Map<String, String>>): Map<String, String> {
+internal fun parseLookups(sources: List<Map<String, String>>): Map<String, String> {
     val histograms = sources.histogram()
 
     fun lookup(name: String, dejaVu: List<String> = emptyList(), depth: Int = 0): String {

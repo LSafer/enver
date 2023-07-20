@@ -17,7 +17,69 @@ package net.lsafer.enver
 
 import kotlin.properties.ReadOnlyProperty
 
-// require
+/* this whole file has been deprecated  */
+
+/**
+ * Obtain a property that uses this enver instance
+ * as the source of truth.
+ *
+ * The source is initially set to `null`
+ *
+ * @param name the variable's name.
+ * @since 1.0.0
+ */
+@Deprecated("Use string() instead", ReplaceWith("string(name)"))
+fun Enver.optional(name: String): ReadOnlyProperty<Any?, String?> {
+    return string(name)
+}
+
+/**
+ * Obtain a property that uses this enver instance
+ * as the source of truth.
+ *
+ * The source is initially set to `null`
+ *
+ * @param name the variable's name.
+ * @param block a function for transforming the value to type of [T].
+ *               Invoked once on every change of the variable's name.
+ * @since 1.0.0
+ */
+@Deprecated("Use string() instead", ReplaceWith("string(name, block)"))
+fun <T> Enver.optional(name: String, block: (String?) -> T): ReadOnlyProperty<Any?, T> {
+    return string(name, block)
+}
+
+/**
+ * Obtain a property that uses this enver instance
+ * as the source of truth.
+ *
+ * The source is initially set to [default].
+ *
+ * @param name the variable's name.
+ * @param default the default value.
+ * @since 1.0.0
+ */
+@Deprecated("Use string() instead", ReplaceWith("string(name) { it ?: default }"))
+fun Enver.optional(name: String, default: String): ReadOnlyProperty<Any?, String> {
+    return string(name) { it ?: default }
+}
+
+/**
+ * Obtain a property that uses this enver instance
+ * as the source of truth.
+ *
+ * The source is initially set to [default].
+ *
+ * @param name the variable's name.
+ * @param default the default value.
+ * @param block a function for transforming the value to type of [T].
+ *               Invoked once on every change of the variable's name.
+ * @since 1.0.0
+ */
+@Deprecated("Use string() instead", ReplaceWith("string(name) { block(it ?: default) }"))
+fun <T> Enver.optional(name: String, default: String, block: (String) -> T): ReadOnlyProperty<Any?, T> {
+    return string(name) { block(it ?: default) }
+}
 
 /**
  * Obtain a property that uses this enver instance
@@ -29,8 +91,12 @@ import kotlin.properties.ReadOnlyProperty
  * @param name the variable's name.
  * @since 1.0.0
  */
+@Deprecated("Use string() with an error() on null instead")
 fun Enver.required(name: String): ReadOnlyProperty<Any?, String> {
-    return required(name) { it }
+    return string(name) {
+        it ?: error("Required environment variable uninitialized: $name")
+        it
+    }
 }
 
 /**
@@ -45,52 +111,14 @@ fun Enver.required(name: String): ReadOnlyProperty<Any?, String> {
  *               Invoked once on every change of the variable's name.
  * @since 1.0.0
  */
+@Deprecated("Use string() with an error() on null instead")
 fun <T> Enver.required(name: String, block: (String) -> T): ReadOnlyProperty<Any?, T> {
-    return this.optional(name) {
+    return string(name) {
         it ?: error("Required environment variable uninitialized: $name")
         block(it)
     }
 }
 
-// return null
-
-/**
- * Obtain a property that uses this enver instance
- * as the source of truth.
- *
- * The source is initially set to `null`
- *
- * @param name the variable's name.
- * @since 1.0.0
- */
-fun Enver.optional(name: String): ReadOnlyProperty<Any?, String?> {
-    return optional(name) { it }
-}
-
-/**
- * Obtain a property that uses this enver instance
- * as the source of truth.
- *
- * The source is initially set to `null`
- *
- * @param name the variable's name.
- * @param block a function for transforming the value to type of [T].
- *               Invoked once on every change of the variable's name.
- * @since 1.0.0
- */
-@OptIn(ExperimentalEnverApi::class)
-fun <T> Enver.optional(name: String, block: (String?) -> T): ReadOnlyProperty<Any?, T> {
-    var current = lazy { block(null) }
-    subscribe(name) {
-        current = lazy { block(it) }
-    }
-    return ReadOnlyProperty { _, _ ->
-        current.value
-    }
-}
-
-// with default
-
 /**
  * Obtain a property that uses this enver instance
  * as the source of truth.
@@ -101,48 +129,9 @@ fun <T> Enver.optional(name: String, block: (String?) -> T): ReadOnlyProperty<An
  * @param default the default value.
  * @since 1.0.0
  */
-fun Enver.optional(name: String, default: String): ReadOnlyProperty<Any?, String> {
-    return optional(name, default) { it }
-}
-
-/**
- * Obtain a property that uses this enver instance
- * as the source of truth.
- *
- * The source is initially set to [default].
- *
- * @param name the variable's name.
- * @param default the default value.
- * @param block a function for transforming the value to type of [T].
- *               Invoked once on every change of the variable's name.
- * @since 1.0.0
- */
-@OptIn(ExperimentalEnverApi::class)
-fun <T> Enver.optional(name: String, default: String, block: (String) -> T): ReadOnlyProperty<Any?, T> {
-    var current = lazy { block(default) }
-    subscribe(name) {
-        current = lazy { block(it) }
-    }
-    return ReadOnlyProperty { _, _ ->
-        current.value
-    }
-}
-
-// DEPRECATED
-
-/**
- * Obtain a property that uses this enver instance
- * as the source of truth.
- *
- * The source is initially set to [default].
- *
- * @param name the variable's name.
- * @param default the default value.
- * @since 1.0.0
- */
-@Deprecated("Use optional() instead", ReplaceWith("optional(name, default)"))
+@Deprecated("Use string() instead", ReplaceWith("string(name) { it ?: default }"))
 operator fun Enver.invoke(name: String, default: String): ReadOnlyProperty<Any?, String> {
-    return optional(name, default)
+    return string(name) { it ?: default }
 }
 
 /**
@@ -157,9 +146,9 @@ operator fun Enver.invoke(name: String, default: String): ReadOnlyProperty<Any?,
  *               Invoked once on every change of the variable's name.
  * @since 1.0.0
  */
-@Deprecated("Use optional() instead", ReplaceWith("optional(name, default, block)"))
+@Deprecated("Use string() instead", ReplaceWith("string(name) { block(it ?: default) }"))
 operator fun <T> Enver.invoke(name: String, default: String, block: (String) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name, default, block)
+    return string(name) { block(it ?: default) }
 }
 
 /**
@@ -171,9 +160,9 @@ operator fun <T> Enver.invoke(name: String, default: String, block: (String) -> 
  * @param name the variable's name.
  * @since 1.0.0
  */
-@Deprecated("Use optional() instead", ReplaceWith("optional(name)"))
+@Deprecated("Use string() instead", ReplaceWith("string(name)"))
 operator fun Enver.invoke(name: String): ReadOnlyProperty<Any?, String?> {
-    return optional(name)
+    return string(name)
 }
 
 /**
@@ -187,7 +176,7 @@ operator fun Enver.invoke(name: String): ReadOnlyProperty<Any?, String?> {
  *               Invoked once on every change of the variable's name.
  * @since 1.0.0
  */
-@Deprecated("Use optional() instead", ReplaceWith("optional(name, block)"))
+@Deprecated("Use string() instead", ReplaceWith("string(name, block)"))
 operator fun <T> Enver.invoke(name: String, block: (String?) -> T): ReadOnlyProperty<Any?, T> {
-    return optional(name, block)
+    return string(name, block)
 }

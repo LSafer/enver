@@ -16,16 +16,22 @@
 package net.lsafer.enver.internal
 
 import net.lsafer.enver.Enver
-import net.lsafer.enver.ExperimentalEnverApi
-import net.lsafer.enver.InternalEnverApi
+import net.lsafer.enver.EnverProperty
+import java.util.WeakHashMap
+import kotlin.properties.ReadOnlyProperty
 
 /**
  * Default [Enver] implementation.
  */
-@InternalEnverApi
-open class EnverImpl : Enver {
+internal class EnverImpl : Enver {
     private val current = mutableMapOf<String, String>()
-    private val listeners = mutableMapOf<Any, MutableList<() -> Unit>>()
+
+    /**
+     * Flipped map where the keys are the listeners
+     * and the values are the environment variable
+     * names to listen to.
+     */
+    private val listeners = WeakHashMap<() -> Unit, String>()
 
     override fun get(name: String): String? {
         return current[name]
@@ -37,22 +43,29 @@ open class EnverImpl : Enver {
         else
             current[name] = value
 
-        listeners.forEach { it.value.forEach { it() } }
+        listeners.forEach { (listener, target) ->
+            if (target == name)
+                listener()
+        }
     }
 
     override fun plusAssign(source: Map<String, String>) {
         current += source
-        listeners.forEach { it.value.forEach { it() } }
+        listeners.forEach { (listener, target) ->
+            if (target in source)
+                listener()
+        }
     }
 
-    @ExperimentalEnverApi
-    override fun subscribe(block: (Map<String, String>) -> Unit, key: Any) {
-        listeners.getOrPut(key) { mutableListOf() } += { block(current) }
-        block(current)
+    override fun createProperty(name: String): EnverProperty<String?> {
+        var value = current[name]
+        listeners[{ value = current[name] }] = name
+        return ReadOnlyProperty { _, _ -> value }
     }
 
-    @ExperimentalEnverApi
-    override fun unsubscribe(key: Any) {
-        listeners.remove(key)
+    override fun <T> createProperty(name: String, block: (String?) -> T): EnverProperty<T> {
+        var value = lazy { block(current[name]) }
+        listeners[{ value = lazy { block(current[name]) } }] = name
+        return ReadOnlyProperty { _, _ -> value.value }
     }
 }

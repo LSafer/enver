@@ -2,13 +2,13 @@ package net.lsafer.enver.test
 
 import net.lsafer.enver.Enver
 import net.lsafer.enver.internal.EnverImpl
-import org.junit.jupiter.api.Test
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-object EnverTest {
+class EnverTest {
     @Test
     fun `createProperty returns live data`() {
         val enver = Enver()

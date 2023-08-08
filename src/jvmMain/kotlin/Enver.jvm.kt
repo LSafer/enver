@@ -13,17 +13,16 @@
  *	See the License for the specific language governing permissions and
  *	limitations under the License.
  */
-package net.lsafer.enver.internal
+package net.lsafer.enver
 
-import net.lsafer.enver.Enver
-import net.lsafer.enver.EnverProperty
-import java.util.WeakHashMap
+import java.util.*
+import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
+import kotlin.reflect.full.extensionReceiverParameter
+import kotlin.reflect.jvm.jvmErasure
 
-/**
- * Default [Enver] implementation.
- */
-internal class EnverImpl : Enver {
+internal class EnverJVM : Enver {
     private val current = mutableMapOf<String, String>()
 
     /**
@@ -31,7 +30,7 @@ internal class EnverImpl : Enver {
      * and the values are the environment variable
      * names to listen to.
      */
-    private val listeners = WeakHashMap<() -> Unit, String>()
+    internal val listeners = WeakHashMap<() -> Unit, String>()
 
     override fun get(name: String): String? {
         return current[name]
@@ -78,4 +77,35 @@ internal class EnverImpl : Enver {
             value.value
         }
     }
+}
+
+actual fun Enver(): Enver {
+    return EnverJVM()
+}
+
+actual fun Enver.createPropertyProvider(): EnverPropertyProvider<String?> {
+    return PropertyDelegateProvider { instance, property ->
+        createProperty(inferNameFor(instance, property))
+    }
+}
+
+actual fun <T> Enver.createPropertyProvider(block: (String?) -> T): EnverPropertyProvider<T> {
+    return PropertyDelegateProvider { instance, property ->
+        createProperty(inferNameFor(instance, property), block)
+    }
+}
+
+private fun inferNameFor(instance: Any?, property: KProperty<*>): String {
+    if (instance != null) {
+        return "$instance.${property.name}"
+    }
+
+    if (property.extensionReceiverParameter != null) {
+        val objectInstance = property.extensionReceiverParameter!!.type.jvmErasure.objectInstance
+            ?: error("Name inference for extension receivers that are not `object` is currently not supported.")
+
+        return "$objectInstance.${property.name}"
+    }
+
+    return property.name
 }

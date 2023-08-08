@@ -17,7 +17,6 @@ package net.lsafer.enver
 
 import net.lsafer.enver.internal.consumeStatements
 import net.lsafer.enver.internal.createStatementConsumer
-import org.intellij.lang.annotations.Language
 
 open class EnverDotenvOptions {
     var onIncompleteStatement = { e: Throwable -> e.printStackTrace(); false }
@@ -31,7 +30,7 @@ class EnverSourceOptions : EnverDotenvOptions() {
     /**
      * The raw source.
      */
-    @Language("dotenv")
+//    @Language("dotenv")
     var source: String = ""
 }
 
@@ -40,7 +39,7 @@ class EnverSourceOptions : EnverDotenvOptions() {
  * source in the given configuration [block].
  */
 fun enverSource(
-    @Language("dotenv")
+//    @Language("dotenv")
     source: String = "",
     block: EnverSourceOptions.() -> Unit = {},
 ): Map<String, String> {

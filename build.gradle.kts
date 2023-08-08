@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("multiplatform") version "1.9.0"
     id("maven-publish")
 }
 
@@ -10,25 +10,69 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation(kotlin("stdlib"))
-    implementation(kotlin("reflect"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
+kotlin {
+    jvm {
+        withJava()
+    }
+    js(IR) {
+        browser {
+            binaries.executable()
 
-    testImplementation(kotlin("test"))
-}
+            testTask(Action {
+                useMocha {
+                    timeout = "${90_000}"
+                }
 
-tasks.test {
-    useJUnitPlatform()
-}
+                nodeJsArgs += "--expose_gc"
+            })
+        }
+        nodejs {
+            binaries.executable()
 
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>("maven") {
-                from(components["java"])
-                artifactId = "enver"
+            testTask(Action {
+                useMocha {
+                    timeout = "${90_000}"
+                }
+
+                nodeJsArgs += "--expose_gc"
+            })
+        }
+    }
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib"))
+                implementation(kotlin("reflect"))
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+
+        val jsMain by getting {
+            dependencies {
+                implementation(platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:1.0.0-pre.597"))
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-js")
             }
         }
     }
 }
+
+//
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            create<MavenPublication>("maven") {
+//                from(components["java"])
+//                artifactId = "enver"
+//            }
+//        }
+//    }
+//}
+//

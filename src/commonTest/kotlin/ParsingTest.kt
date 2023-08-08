@@ -3,6 +3,7 @@ package net.lsafer.enver.test
 import net.lsafer.enver.enverSource
 import net.lsafer.enver.internal.generateEnclosureSequenceDoublePointer
 import net.lsafer.enver.internal.generateEnclosureSequenceSinglePointer
+import kotlin.js.JsName
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -13,6 +14,7 @@ import kotlin.test.assertEquals
 )
 class ParsingTest {
     @Test
+    @JsName("_152700")
     fun `multiline support with single quotes`() {
         val env = enverSource {
             source = """
@@ -35,6 +37,7 @@ class ParsingTest {
     }
 
     @Test
+    @JsName("_717001")
     fun `comments and whitespaces and blank lines`() {
         val env = enverSource {
             onIncompleteStatement = { true }
@@ -45,8 +48,8 @@ class ParsingTest {
                 Alpha Beta '\"
                 Gamma
                 "      This is also a #comment
-                JOB=   Software Engineer   
-                
+                JOB=   Software Engineer
+
                 OTHER_JOBS
             """.trimIndent()
         }
@@ -62,6 +65,7 @@ class ParsingTest {
     }
 
     @Test
+    @JsName("_454085")
     fun `escapes and multiple escapes and multiline escapes`() {
         val env = enverSource {
             source = """
@@ -83,6 +87,7 @@ class ParsingTest {
     }
 
     @Test
+    @JsName("_288813")
     fun `generateEnclosureSequenceSinglePointer check`() {
 //        01234567890123456789012
 //        { { { } } } { { { } } }
@@ -104,6 +109,7 @@ class ParsingTest {
     }
 
     @Test
+    @JsName("_216449")
     fun `generateEnclosureSequenceDoublePointer check`() {
 //        01234567890123456789012
 //        { { { } } } { { { } } }

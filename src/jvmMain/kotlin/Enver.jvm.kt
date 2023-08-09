@@ -19,6 +19,7 @@ import java.util.*
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.extensionReceiverParameter
 import kotlin.reflect.jvm.jvmErasure
 
@@ -83,26 +84,69 @@ actual fun Enver(): Enver {
     return EnverJVM()
 }
 
+actual fun Enver.createProperty(): EnverProperty<String?> {
+    var k: Pair<Any?, KProperty<Any?>>? = null
+    lateinit var p: EnverProperty<String?>
+    return EnverProperty { instance, property ->
+        val keys = instance to property
+
+        if (k == null) {
+            val name = inferNameFor(instance, property)
+            name ?: error("Could not infer name for ${instance}.${property.name}")
+            k = keys
+            p = createProperty(name)
+        } else if (k != keys) {
+            error("Enver.createProperty() does not yet support being used multiple times")
+        }
+
+        p.getValue(instance, property)
+    }
+}
+
+actual fun <T> Enver.createProperty(block: (String?) -> T): EnverProperty<T> {
+    var k: Pair<Any?, KProperty<Any?>>? = null
+    lateinit var p: EnverProperty<T>
+    return ReadOnlyProperty { instance, property ->
+        val keys = instance to property
+
+        if (k == null) {
+            val name = inferNameFor(instance, property)
+            name ?: error("Could not infer name for ${instance}.${property.name}")
+            k = keys
+            p = createProperty(name, block)
+        } else if (k != keys) {
+            error("Enver.createProperty() does not yet support being used multiple times")
+        }
+
+        p.getValue(instance, property)
+    }
+}
+
 actual fun Enver.createPropertyProvider(): EnverPropertyProvider<String?> {
     return PropertyDelegateProvider { instance, property ->
-        createProperty(inferNameFor(instance, property))
+        val name = inferNameFor(instance, property)
+        if (name == null) createProperty()
+        else createProperty(name)
     }
 }
 
 actual fun <T> Enver.createPropertyProvider(block: (String?) -> T): EnverPropertyProvider<T> {
     return PropertyDelegateProvider { instance, property ->
-        createProperty(inferNameFor(instance, property), block)
+        val name = inferNameFor(instance, property)
+        if (name == null) createProperty(block)
+        else createProperty(name, block)
     }
 }
 
-private fun inferNameFor(instance: Any?, property: KProperty<*>): String {
+private fun inferNameFor(instance: Any?, property: KProperty<*>): String? {
     if (instance != null) {
         return "$instance.${property.name}"
     }
 
-    if (property.extensionReceiverParameter != null) {
+    if (property is KProperty1<*, *>) {
         val objectInstance = property.extensionReceiverParameter!!.type.jvmErasure.objectInstance
-            ?: error("Name inference for extension receivers that are not `object` is currently not supported.")
+
+        objectInstance ?: return null
 
         return "$objectInstance.${property.name}"
     }

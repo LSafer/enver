@@ -26,7 +26,7 @@ class EnverTest {
 
     @Test
     @JsName("_196159")
-    fun `createProperty transforms applied lazily`() {
+    fun `createProperty(name, block) transforms applied lazily`() {
         var invocationCount = 0
         val enver = Enver()
         val price by enver.createProperty("PRICE") {
@@ -44,6 +44,7 @@ class EnverTest {
         price.toString()
         price.toString()
 
+        assertEquals(1, price)
         assertEquals(1, invocationCount)
     }
 }

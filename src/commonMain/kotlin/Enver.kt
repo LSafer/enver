@@ -82,6 +82,42 @@ interface Enver {
  * will be used instead:
  *
  * `"$instance.${property.name}"`
+ *
+ * > Please note that (currently) the returned property will only work
+ * with the first instance and property given to it.
+ */
+expect fun Enver.createProperty(): EnverProperty<String?>
+
+/**
+ * Create a provider that returns a new property
+ * using [Enver.createProperty] with the name being
+ * the name of the property instance provided to it.
+ *
+ * If an instance is provided. The following name
+ * will be used instead:
+ *
+ * `"$instance.${property.name}"`
+ *
+ * > Please note that (currently) the returned property will only work
+ * with the first instance and property given to it.
+ */
+expect fun <T> Enver.createProperty(block: (String?) -> T): EnverProperty<T>
+
+/**
+ * Create a provider that returns a new property
+ * using [Enver.createProperty] with the name being
+ * the name of the property instance provided to it.
+ *
+ * If an instance is provided. The following name
+ * will be used instead:
+ *
+ * `"$instance.${property.name}"`
+ *
+ * If the instance was not provided to [PropertyDelegateProvider.provideDelegate]
+ * the instance provided to [ReadOnlyProperty.getValue] will be used instead.
+ *
+ * > Please note that (currently) the returned property will only work
+ * with the first instance and property given to it.
  */
 expect fun Enver.createPropertyProvider(): EnverPropertyProvider<String?>
 
@@ -94,6 +130,12 @@ expect fun Enver.createPropertyProvider(): EnverPropertyProvider<String?>
  * will be used instead:
  *
  * `"$instance.${property.name}"`
+ *
+ * If the instance was not provided to [PropertyDelegateProvider.provideDelegate]
+ * the instance provided to [ReadOnlyProperty.getValue] will be used instead.
+ *
+ * > Please note that (currently) the returned property will only work
+ * with the first instance and property given to it.
  */
 expect fun <T> Enver.createPropertyProvider(block: (String?) -> T): EnverPropertyProvider<T>
 

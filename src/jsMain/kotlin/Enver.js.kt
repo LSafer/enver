@@ -100,25 +100,65 @@ actual fun Enver(): Enver {
     return EnverJS()
 }
 
+actual fun Enver.createProperty(): EnverProperty<String?> {
+    var n: String? = null
+    lateinit var p: EnverProperty<String?>
+    return EnverProperty { instance, property ->
+        val name = inferNameFor(instance, property)
+
+        if (n == null) {
+            name ?: error("Could not infer name for ${instance}.${property.name}")
+            n = name
+            p = createProperty(name)
+        } else if (n != name) {
+            error("Enver.createProperty() does not yet support being used multiple times")
+        }
+
+        p.getValue(instance, property)
+    }
+}
+
+actual fun <T> Enver.createProperty(block: (String?) -> T): EnverProperty<T> {
+    var n: String? = null
+    lateinit var p: EnverProperty<T>
+    return ReadOnlyProperty { instance, property ->
+        val name = inferNameFor(instance, property)
+
+        if (n == null) {
+            name ?: error("Could not infer name for ${instance}.${property.name}")
+            n = name
+            p = createProperty(name, block)
+        } else if (n != name) {
+            error("Enver.createProperty() does not yet support being used multiple times")
+        }
+
+        p.getValue(instance, property)
+    }
+}
+
 actual fun Enver.createPropertyProvider(): EnverPropertyProvider<String?> {
     return PropertyDelegateProvider { instance, property ->
-        createProperty(inferNameFor(instance, property))
+        val name = inferNameFor(instance, property)
+        if (name == null) createProperty()
+        else createProperty(name)
     }
 }
 
 actual fun <T> Enver.createPropertyProvider(block: (String?) -> T): EnverPropertyProvider<T> {
     return PropertyDelegateProvider { instance, property ->
-        createProperty(inferNameFor(instance, property), block)
+        val name = inferNameFor(instance, property)
+        if (name == null) createProperty(block)
+        else createProperty(name, block)
     }
 }
 
-private fun inferNameFor(instance: Any?, property: KProperty<*>): String {
+private fun inferNameFor(instance: Any?, property: KProperty<*>): String? {
     if (instance != null) {
         return "$instance.${property.name}"
     }
 
     if (property is KProperty1<*, *>) {
-        error("Name inference for extension receivers is currently not supported.")
+        return null
     }
 
     return property.name

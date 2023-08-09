@@ -15,12 +15,8 @@
  */
 package net.lsafer.enver
 
-import net.lsafer.enver.internal.EnverImpl
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
-import kotlin.reflect.full.extensionReceiverParameter
-import kotlin.reflect.jvm.jvmErasure
 
 typealias EnverProperty<T> = ReadOnlyProperty<Any?, T>
 typealias EnverPropertyProvider<T> = PropertyDelegateProvider<Any?, EnverProperty<T>>
@@ -86,12 +82,11 @@ interface Enver {
  * will be used instead:
  *
  * `"$instance.${property.name}"`
+ *
+ * > Please note that (currently) the returned property will only work
+ * with the first instance and property given to it.
  */
-fun Enver.createPropertyProvider(): EnverPropertyProvider<String?> {
-    return PropertyDelegateProvider { instance, property ->
-        createProperty(inferNameFor(instance, property))
-    }
-}
+expect fun Enver.createProperty(): EnverProperty<String?>
 
 /**
  * Create a provider that returns a new property
@@ -102,31 +97,49 @@ fun Enver.createPropertyProvider(): EnverPropertyProvider<String?> {
  * will be used instead:
  *
  * `"$instance.${property.name}"`
+ *
+ * > Please note that (currently) the returned property will only work
+ * with the first instance and property given to it.
  */
-fun <T> Enver.createPropertyProvider(block: (String?) -> T): EnverPropertyProvider<T> {
-    return PropertyDelegateProvider { instance, property ->
-        createProperty(inferNameFor(instance, property), block)
-    }
-}
+expect fun <T> Enver.createProperty(block: (String?) -> T): EnverProperty<T>
+
+/**
+ * Create a provider that returns a new property
+ * using [Enver.createProperty] with the name being
+ * the name of the property instance provided to it.
+ *
+ * If an instance is provided. The following name
+ * will be used instead:
+ *
+ * `"$instance.${property.name}"`
+ *
+ * If the instance was not provided to [PropertyDelegateProvider.provideDelegate]
+ * the instance provided to [ReadOnlyProperty.getValue] will be used instead.
+ *
+ * > Please note that (currently) the returned property will only work
+ * with the first instance and property given to it.
+ */
+expect fun Enver.createPropertyProvider(): EnverPropertyProvider<String?>
+
+/**
+ * Create a provider that returns a new property
+ * using [Enver.createProperty] with the name being
+ * the name of the property instance provided to it.
+ *
+ * If an instance is provided. The following name
+ * will be used instead:
+ *
+ * `"$instance.${property.name}"`
+ *
+ * If the instance was not provided to [PropertyDelegateProvider.provideDelegate]
+ * the instance provided to [ReadOnlyProperty.getValue] will be used instead.
+ *
+ * > Please note that (currently) the returned property will only work
+ * with the first instance and property given to it.
+ */
+expect fun <T> Enver.createPropertyProvider(block: (String?) -> T): EnverPropertyProvider<T>
 
 /**
  * Create a new [Enver] instance.
  */
-fun Enver(): Enver {
-    return EnverImpl()
-}
-
-private fun inferNameFor(instance: Any?, property: KProperty<*>): String {
-    if (instance != null) {
-        return "$instance.${property.name}"
-    }
-
-    if (property.extensionReceiverParameter != null) {
-        val objectInstance = property.extensionReceiverParameter!!.type.jvmErasure.objectInstance
-                ?: error("Name inference for extension receivers that are not `object` is currently not supported.")
-
-        return "$objectInstance.${property.name}"
-    }
-
-    return property.name
-}
+expect fun Enver(): Enver

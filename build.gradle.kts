@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "net.lsafer"
-version = "1.0.0"
+version = "1.0.0-snapshot"
 
 repositories {
     mavenCentral()
@@ -16,7 +16,7 @@ kotlin {
     }
     js(IR) {
         browser {
-            binaries.executable()
+            binaries.library()
 
             testTask(Action {
                 useMocha {
@@ -27,7 +27,7 @@ kotlin {
             })
         }
         nodejs {
-            binaries.executable()
+            binaries.library()
 
             testTask(Action {
                 useMocha {

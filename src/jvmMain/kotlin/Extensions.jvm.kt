@@ -24,18 +24,22 @@ private inline fun String.toFileOrNull(): File? {
     return File(this).takeIf { it.isFile }
 }
 
+@Deprecated("use Enver.string instead. Distinguishing unspecified file and non existing files cannot be achieved")
 fun Enver.file(): EnverPropertyProvider<File?> {
     return string { it?.toFileOrNull() }
 }
 
+@Deprecated("use Enver.string instead. Distinguishing unspecified file and non existing files cannot be achieved")
 fun <T> Enver.file(block: (File?) -> T): EnverPropertyProvider<T> {
     return string { block(it?.toFileOrNull()) }
 }
 
+@Deprecated("use Enver.string instead. Distinguishing unspecified file and non existing files cannot be achieved")
 fun Enver.file(name: String): EnverProperty<File?> {
     return string(name) { it?.toFileOrNull() }
 }
 
+@Deprecated("use Enver.string instead. Distinguishing unspecified file and non existing files cannot be achieved")
 fun <T> Enver.file(name: String, block: (File?) -> T): EnverProperty<T> {
     return string(name) { block(it?.toFileOrNull()) }
 }
@@ -47,18 +51,22 @@ private inline fun String.toDirectoryOrNull(): File? {
     return File(this).takeIf { it.isDirectory }
 }
 
+@Deprecated("use Enver.string instead. Distinguishing unspecified directories and non existing directories cannot be achieved")
 fun Enver.directory(): EnverPropertyProvider<File?> {
     return string { it?.toDirectoryOrNull() }
 }
 
+@Deprecated("use Enver.string instead. Distinguishing unspecified directories and non existing directories cannot be achieved")
 fun <T> Enver.directory(block: (File?) -> T): EnverPropertyProvider<T> {
     return string { block(it?.toDirectoryOrNull()) }
 }
 
+@Deprecated("use Enver.string instead. Distinguishing unspecified directories and non existing directories cannot be achieved")
 fun Enver.directory(name: String): EnverProperty<File?> {
     return string(name) { it?.toDirectoryOrNull() }
 }
 
+@Deprecated("use Enver.string instead. Distinguishing unspecified directories and non existing directories cannot be achieved")
 fun <T> Enver.directory(name: String, block: (File?) -> T): EnverProperty<T> {
     return string(name) { block(it?.toDirectoryOrNull()) }
 }

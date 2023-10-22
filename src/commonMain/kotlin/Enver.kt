@@ -60,6 +60,11 @@ interface Enver {
     operator fun plusAssign(source: Map<String, String>)
 
     /**
+     * Return a map backed by this enver instance.
+     */
+    fun asMap(): Map<String, String>
+
+    /**
      * Create a new property that always returns
      * the latest value for [name].
      */

@@ -57,6 +57,10 @@ internal class EnverJVM : Enver {
         }
     }
 
+    override fun asMap(): Map<String, String> {
+        return Collections.unmodifiableMap(current)
+    }
+
     override fun createProperty(name: String): EnverProperty<String?> {
         var value = current[name]
         val listener = { value = current[name] }

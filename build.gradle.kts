@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "net.lsafer"
-version = "1.0.0"
+version = "1.0.0-snapshot"
 
 repositories {
     mavenCentral()
@@ -16,7 +16,7 @@ kotlin {
     }
     js(IR) {
         browser {
-            binaries.executable()
+            binaries.library()
 
             testTask(Action {
                 useMocha {
@@ -27,7 +27,7 @@ kotlin {
             })
         }
         nodejs {
-            binaries.executable()
+            binaries.library()
 
             testTask(Action {
                 useMocha {
@@ -62,6 +62,11 @@ kotlin {
             }
         }
     }
+}
+
+// https://github.com/jitpack/jitpack.io/issues/3853#issuecomment-1683838845
+rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java) {
+    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion = "16.0.0"
 }
 
 //

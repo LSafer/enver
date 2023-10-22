@@ -71,6 +71,11 @@ internal class EnverJS : Enver {
         }
     }
 
+    override fun asMap(): Map<String, String> {
+        // fixme: return actually unmodifiable map
+        return current
+    }
+
     override fun createProperty(name: String): EnverProperty<String?> {
         var value = current[name]
         val listener = { value = current[name] }

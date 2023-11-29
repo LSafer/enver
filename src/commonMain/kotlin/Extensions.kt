@@ -28,7 +28,7 @@ fun <T> Enver.string(block: (String?) -> T): EnverPropertyProvider<T> {
     return createPropertyProvider(block)
 }
 
-fun Enver.string(name: Nothing, default: String): EnverPropertyProvider<String> {
+fun Enver.string(name: Nothing? = null, default: String): EnverPropertyProvider<String> {
     return string { it ?: default }
 }
 

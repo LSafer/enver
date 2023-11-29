@@ -83,11 +83,13 @@ fun <T> Enver.contentful(name: String, default: String, block: (String) -> T): R
 }
 
 //
+/*
 
 @Deprecated("Use ?: operator instead", ReplaceWith("int(name) { it ?: default }"))
 fun Enver.int(name: String, default: Int): ReadOnlyProperty<Any?, Int> {
     return int(name) { it ?: default }
 }
+*/
 
 @Deprecated("Use ?: operator instead", ReplaceWith("int(name) { block(it ?: default) }"))
 fun <T> Enver.int(name: String, default: Int, block: (Int) -> T): ReadOnlyProperty<Any?, T> {
@@ -95,11 +97,13 @@ fun <T> Enver.int(name: String, default: Int, block: (Int) -> T): ReadOnlyProper
 }
 
 //
+/*
 
 @Deprecated("Use ?: operator instead", ReplaceWith("float(name) { it ?: default }"))
 fun Enver.float(name: String, default: Float): ReadOnlyProperty<Any?, Float> {
     return float(name) { it ?: default }
 }
+*/
 
 @Deprecated("Use ?: operator instead", ReplaceWith("float(name) { block(it ?: default) }"))
 fun <T> Enver.float(name: String, default: Float, block: (Float) -> T): ReadOnlyProperty<Any?, T> {
@@ -108,11 +112,13 @@ fun <T> Enver.float(name: String, default: Float, block: (Float) -> T): ReadOnly
 
 //
 
+/*
 
 @Deprecated("Use ?: operator instead", ReplaceWith("double(name) { it ?: default }"))
 fun Enver.double(name: String, default: Double): ReadOnlyProperty<Any?, Double> {
     return double(name) { it ?: default }
 }
+*/
 
 @Deprecated("Use ?: operator instead", ReplaceWith("double(name) { block(it ?: default) }"))
 fun <T> Enver.double(name: String, default: Double, block: (Double) -> T): ReadOnlyProperty<Any?, T> {
@@ -120,11 +126,13 @@ fun <T> Enver.double(name: String, default: Double, block: (Double) -> T): ReadO
 }
 
 //
+/*
 
 @Deprecated("Use ?: operator instead", ReplaceWith("long(name) { it ?: default }"))
 fun Enver.long(name: String, default: Long): ReadOnlyProperty<Any?, Long> {
     return long(name) { it ?: default }
 }
+*/
 
 @Deprecated("Use ?: operator instead", ReplaceWith("long(name) { block(it ?: default) }"))
 fun <T> Enver.long(name: String, default: Long, block: (Long) -> T): ReadOnlyProperty<Any?, T> {
@@ -133,10 +141,12 @@ fun <T> Enver.long(name: String, default: Long, block: (Long) -> T): ReadOnlyPro
 
 //
 
+/*
 @Deprecated("Use ?: operator instead", ReplaceWith("duration(name) { block(it ?: default) }"))
 fun Enver.duration(name: String, default: Duration): ReadOnlyProperty<Any?, Duration> {
     return duration(name) { it ?: default }
 }
+*/
 
 @Deprecated("Use ?: operator instead", ReplaceWith("duration(name) { block(it ?: default) }"))
 fun <T> Enver.duration(name: String, default: Duration, block: (Duration) -> T): ReadOnlyProperty<Any?, T> {
@@ -144,11 +154,13 @@ fun <T> Enver.duration(name: String, default: Duration, block: (Duration) -> T):
 }
 
 //
+/*
 
 @Deprecated("Use ?: operator instead", ReplaceWith("boolean(name) { it ?: default }"))
 fun Enver.boolean(name: String, default: Boolean): ReadOnlyProperty<Any?, Boolean> {
     return boolean(name) { it ?: default }
 }
+*/
 
 @Deprecated("Use ?: operator instead", ReplaceWith("boolean(name) { block(it ?: default) }"))
 fun <T> Enver.boolean(name: String, default: Boolean, block: (Boolean) -> T): ReadOnlyProperty<Any?, T> {
